@@ -1,15 +1,21 @@
 /* ============================================================
    js/posters.js — kapak görselleri
    ------------------------------------------------------------
-   Resmî posterler telifli olduğu için depoya GÖMÜLMEZ.
-   İki kaynak var:
+   Görsellerin kendisi telifli olduğu için depoya GÖMÜLMEZ,
+   yalnızca TMDB yolları tutulur. Kapak üç kaynaktan gelir,
+   sırasıyla denenir:
 
-   1) TMDB API (themoviedb.org) — kullanıcı kendi ücretsiz
-      anahtarını Ayarlar'a girer. Başlık + yıl ile aranır,
-      bulunan poster yolu localStorage'a yazılır, bir daha
-      ağa çıkılmaz.
-   2) Anahtar yoksa: başlıktan üretilen kapak (renk, sayı ve
-      baş harfler). Site anahtarsız da tam çalışır.
+   1) localStorage — kullanıcının anahtarıyla daha önce
+      bulunmuş poster. Her şeyden önce gelir.
+   2) js/data/posters.js — depoya gömülü TMDB yolları.
+      Sayede site anahtarsız da gerçek posterleri gösterir.
+   3) TMDB API — yalnızca yukarıdaki ikisinde karşılığı
+      olmayan kayıtlar için, kullanıcı Ayarlar'a kendi
+      ücretsiz anahtarını girmişse. Başlık + yıl ile aranır,
+      sonuç localStorage'a yazılır, bir daha ağa çıkılmaz.
+
+   Hiçbiri yoksa: başlıktan üretilen kapak (renk, sayı ve
+   baş harfler). Site her koşulda tam çalışır.
 
    Görseller görünür alana girince yüklenir (IntersectionObserver).
    ============================================================ */
@@ -104,12 +110,21 @@ window.Posters = (function () {
     });
   }
 
+  // Ağa çıkmadan bilinen kapak URL'i: önce localStorage, sonra gömülü yol.
+  // Hiçbiri yoksa '' döner (üretilen kapak kalır).
+  function urlFor(item) {
+    const cached = Store.getPoster(item.id);
+    if (cached) return cached;
+    const baked = (window.DATA_POSTERS || {})[item.id];
+    return baked ? IMG + baked : '';
+  }
+
   function load(el) {
     const item = el._item;
     if (!item) return;
-    const cached = Store.getPoster(item.id);
-    if (cached) { apply(el, cached); return; }   // önbellekte var
-    if (cached === '') return;                   // daha önce bulunamadı
+    const known = urlFor(item);
+    if (known) { apply(el, known); return; }
+    if (Store.getPoster(item.id) === '') return; // daha önce aranmış, bulunamamış
     if (!Store.getKey()) return;                 // anahtar yok, üretilen kapak kalsın
     queue.push({ item, el });
     drain();
@@ -134,5 +149,5 @@ window.Posters = (function () {
     document.querySelectorAll('.poster').forEach(load);
   }
 
-  return { build, refreshAll, fallbackFor };
+  return { build, refreshAll, fallbackFor, urlFor };
 })();

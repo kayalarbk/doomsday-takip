@@ -14,7 +14,7 @@ Vanilla HTML/CSS/JS — build adımı, bağımlılık, sunucu yok.
 - Filtreler: Hepsi / Resmî liste / MCU / X-Men / Filmler / Diziler / İzlenmemişler
 - Doomsday geri sayımı, ilerleme çubuğu, yıl bazlı sayaçlar
 - Özgün açılış animasyonu (günde bir kez, atlanabilir)
-- İsteğe bağlı **TMDB** kapak görselleri — kendi ücretsiz v3 anahtarınla
+- Gerçek **poster görselleri** — anahtar gerekmez
 - Dışa/içe aktarma (JSON) ve sıfırlama
 - **PWA**: çevrimdışı çalışır, ana ekrana eklenebilir
 - Klavye erişimi ve `prefers-reduced-motion` desteği
@@ -38,11 +38,25 @@ Tüm yollar göreli (`./`) olduğu için alt klasörde de sorunsuz çalışır.
 
 ## Kapak görselleri
 
-Resmî posterler telifli olduğu için depoya dahil edilmiyor. Anahtar girmezsen
-her yapım için `id`'sinden üretilen kararlı bir kapak gösterilir — site
-eksiksiz çalışır. Gerçek posterler istersen Ayarlar'dan kendi
-[TMDB](https://www.themoviedb.org/settings/api) v3 anahtarını gir; bulunan
-URL'ler `localStorage`'a yazılır ve bir daha ağa çıkılmaz.
+Görsellerin kendisi telifli olduğu için depoda tutulmuyor — yalnızca TMDB
+yolları (`js/data/posters.js`, 84 kayıt). Görseller `image.tmdb.org`
+üzerinden çekilir, yani **anahtar girmeden herkes gerçek posterleri görür**.
+
+Bir kaydın karşılığı yoksa `id`'sinden üretilen kararlı bir kapak (renk +
+baş harfler) gösterilir; site her koşulda eksiksiz çalışır. Ayarlar'dan kendi
+[TMDB](https://www.themoviedb.org/settings/api) anahtarını girersen yalnızca
+o eksik kayıtlar için canlı arama yapılır, sonuç `localStorage`'a yazılır.
+
+Veri dosyalarına yeni yapım ekledikten sonra listeyi tazelemek için:
+
+```bash
+TMDB_TOKEN=<v4 okuma tokenı> node tools/fetch-posters.mjs
+```
+
+Token depoya yazılmaz, yalnızca ortam değişkeninden okunur.
+
+> Bu ürün TMDB API'sini kullanır, TMDB tarafından onaylanmış ya da
+> sertifikalanmış değildir.
 
 ## Veri
 

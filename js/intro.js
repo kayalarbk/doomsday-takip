@@ -27,12 +27,11 @@ window.Intro = (function () {
   let node = null, timer = null, done = false;
 
   function tiles(items) {
-    const cache = Store.allPosters();
     const pool = items.slice().sort(() => Math.random() - 0.5).slice(0, 26);
     return pool.map(it => {
       const d = document.createElement('div');
       d.className = 'intro-tile';
-      const url = cache[it.id];
+      const url = Posters.urlFor(it);
       if (url) d.style.backgroundImage = `url("${url}")`;
       else d.style.background = Posters.fallbackFor(it).css;
       return d;

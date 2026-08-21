@@ -15,6 +15,8 @@ mcu/
 ├── manifest.webmanifest       PWA tanımı
 ├── sw.js                      çevrimdışı önbellek (SHELL listesi burada)
 ├── PROGRESS.md                bu dosya
+├── tools/
+│   └── fetch-posters.mjs      posters.js'i TMDB'den yeniden üretir (node)
 ├── icons/
 │   ├── icon-192.png           üretilmiş ikon (istersen değiştir)
 │   └── icon-512.png
@@ -30,7 +32,8 @@ mcu/
     ├── intro.js               açılış animasyonu                  (Store, Posters, Util)
     ├── data/
     │   ├── mcu.js             window.DATA_MCU  — 69 kayıt
-    │   └── xmen.js            window.DATA_XMEN — 15 kayıt
+    │   ├── xmen.js            window.DATA_XMEN — 15 kayıt
+    │   └── posters.js         window.DATA_POSTERS — id→TMDB yolu (ÜRETİLMİŞ)
     ├── render.js              liste, filtre, kart, istatistik    (hepsine bağlı)
     └── app.js                 başlangıç, ayarlar, dışa/içe aktarma, sw kaydı
 ```
@@ -58,7 +61,8 @@ Modül sistemi yok, hepsi `window` üzerinde global. Sıra bozulursa sessizce ç
 | `soon` |   | `true` → henüz çıkmadı |
 | `note` |   | kart altındaki kısa açıklama |
 
-**Yeni yapım eklerken:** ilgili data dosyasına nesneyi ekle, `sw.js` içindeki
+**Yeni yapım eklerken:** ilgili data dosyasına nesneyi ekle,
+`node tools/fetch-posters.mjs` ile poster tablosunu tazele, `sw.js` içindeki
 `CACHE` sürümünü artır. Başka hiçbir yere dokunmaya gerek yok — liste,
 sayaç, yıl grubu ve filtreler otomatik güncellenir.
 
@@ -85,15 +89,36 @@ uygulama çalışmaya devam eder, sadece kayıt kalıcı olmaz (kullanıcıya to
 
 ## 4. Kapak görselleri
 
-Resmî posterler **depoya gömülmüyor** (telifli). İki kaynak:
+Görsellerin kendisi **depoya gömülmüyor** (telifli) — yalnızca TMDB yolları.
+`Posters.urlFor(item)` sırayla üç kaynağa bakar:
 
-1. **TMDB** — kullanıcı Ayarlar'dan kendi ücretsiz v3 anahtarını girer.
-   `posters.js` başlık + yıl ile arar, bulduğu URL'i localStorage'a yazar,
-   bir daha ağa çıkmaz. İstekler 90 ms aralıkla sıraya alınır.
-2. **Üretilen kapak** — anahtar yoksa `id`'den kararlı bir renk + baş harf +
-   yıl üretilir. Site anahtarsız da eksiksiz çalışır.
+1. **localStorage** (`mcu2026:posters`) — kullanıcının anahtarıyla daha önce
+   bulunmuş poster. Her şeyden önce gelir.
+2. **`js/data/posters.js`** — depoya gömülü `id → /abc.jpg` tablosu.
+   Tam URL `https://image.tmdb.org/t/p/w185` + yol. Site anahtarsız da
+   gerçek posterleri bunun sayesinde gösterir.
+3. **TMDB canlı arama** — yalnızca ilk ikisinde karşılığı olmayan kayıtlar
+   için, kullanıcı Ayarlar'a kendi anahtarını girmişse. Sonuç localStorage'a
+   yazılır, istekler 90 ms aralıkla sıraya alınır.
+
+Hiçbiri yoksa **üretilen kapak**: `id`'den kararlı bir renk + baş harf + yıl.
+Site her koşulda eksiksiz çalışır.
 
 Görseller `IntersectionObserver` ile, görünür alana 400 px kala yüklenir.
+Jenerik şeridi de aynı `urlFor` üzerinden besleniyor.
+
+**`js/data/posters.js` üretilmiş dosyadır, elle düzenleme.** Veri dosyalarına
+yeni yapım ekledikten sonra tazelemek için:
+
+```bash
+TMDB_TOKEN=<v4 okuma tokenı> node tools/fetch-posters.mjs
+```
+
+Script filmleri başlık + yıl ile, dizileri başlıkla arar; dizide kaydın yılına
+denk gelen **sezon** posterini seçer (Loki S2, What If...? S3 gibi kayıtlar
+doğru kapağı alsın diye). Arama yanlış yapımı getiriyorsa scriptteki
+`OVERRIDE` tablosuna elle yol yaz — `X-Men` ve `X2` şu an orada, çünkü
+TMDB araması bu iki başlıkta tanıtım programlarını öne çıkarıyor.
 
 ---
 
@@ -141,7 +166,9 @@ Yoksa kullanıcıda eski sürüm takılı kalır.
 - [x] Filtreler: Hepsi / Resmî liste / MCU / X-Men / Filmler / Diziler / İzlenmemişler
 - [x] Doomsday geri sayımı + ilerleme çubuğu + yıl bazlı sayaç
 - [x] Özgün açılış animasyonu, günde bir kez
-- [x] TMDB kapak entegrasyonu + üretilen kapak yedeği
+- [x] Depoya gömülü TMDB poster yolları (84/84) — anahtarsız gerçek kapaklar
+- [x] Eksikler için TMDB canlı arama + üretilen kapak yedeği
+- [x] `tools/fetch-posters.mjs` ile poster tablosunu yeniden üretme
 - [x] Dışa/içe aktarma (JSON), sıfırlama
 - [x] PWA: manifest, service worker, ikonlar, çevrimdışı çalışma
 - [x] Klavye erişimi, `prefers-reduced-motion`, mobil düzen

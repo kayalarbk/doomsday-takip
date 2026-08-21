@@ -5,7 +5,7 @@
    hem de SHELL listesini güncelle. Aksi halde kullanıcıda eski
    sürüm takılı kalır.
    ============================================================ */
-const CACHE = 'doomsday-v1';
+const CACHE = 'doomsday-v2';
 const SHELL = [
   './',
   './index.html',
@@ -20,6 +20,7 @@ const SHELL = [
   './js/intro.js',
   './js/data/mcu.js',
   './js/data/xmen.js',
+  './js/data/posters.js',
   './js/render.js',
   './js/app.js'
 ];
