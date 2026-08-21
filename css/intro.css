@@ -1,0 +1,110 @@
+/* ============================================================
+   css/intro.css — açılış animasyonu
+   ------------------------------------------------------------
+   Marvel'ın resmî jenerik videosu telifli olduğu için
+   kullanılmıyor. Bunun yerine aynı fikri kendi verimizle
+   kuran ÖZGÜN bir animasyon: kendi kartlarının kapakları
+   hızlı bir şerit halinde akar, şerit bir yazı maskesinin
+   içinden geçer, sonra şerit durur ve başlık yerine oturur.
+
+   Toplam süre: ~2.6 sn (js/intro.js içindeki TIMELINE ile eşleşir)
+   ============================================================ */
+
+#intro{
+  position: fixed; inset: 0; z-index: 100;
+  background: #0a0d13;
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+#intro[hidden]{ display: none; }
+
+/* --- akan kapak şeridi --- */
+.intro-strip{
+  position:absolute; top:50%; left:0; width:100%;
+  height: 190px; margin-top:-95px;
+  display:flex; gap:6px; align-items:center;
+  will-change: transform;
+  animation: strip-run 2.15s cubic-bezier(.12,.72,.16,1) forwards;
+}
+.intro-tile{
+  flex: 0 0 auto;
+  width: 108px; height: 162px;
+  border-radius: 2px;
+  background-size: cover; background-position:center;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+@keyframes strip-run{
+  from{ transform: translate3d(6%,0,0)   scale(1.6); }
+  60% { transform: translate3d(-64%,0,0) scale(1.18); }
+  to  { transform: translate3d(-78%,0,0) scale(1.02); }
+}
+
+/* --- şeridin üstündeki maskeli başlık --- */
+.intro-mask{
+  position: relative; z-index: 2;
+  text-align: center;
+  padding: 0 16px;
+  mix-blend-mode: screen;
+}
+.intro-word{
+  display:block;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(56px, 20vw, 148px);
+  letter-spacing: -.02em;
+  line-height: .82;
+  color: #fff;
+  animation: word-settle 2.5s cubic-bezier(.16,.9,.2,1) forwards;
+}
+@keyframes word-settle{
+  0%  { letter-spacing:.34em; opacity:0;   filter: blur(9px); }
+  35% { letter-spacing:.12em; opacity:.85; filter: blur(2px); }
+  100%{ letter-spacing:-.02em; opacity:1;  filter: blur(0); }
+}
+
+.intro-sub{
+  display:block; margin-top:14px;
+  font-family: var(--mono); font-size:11px;
+  letter-spacing:.34em; text-transform:uppercase;
+  color: var(--gold);
+  opacity:0;
+  animation: sub-in .7s ease 1.5s forwards;
+}
+@keyframes sub-in{ to{ opacity:1; } }
+
+/* --- kararma perdesi ve mürekkep flaşı --- */
+.intro-veil{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 50% 50%, transparent 22%, #0a0d13 76%);
+}
+.intro-flash{
+  position:absolute; inset:0; z-index:3; pointer-events:none;
+  background: var(--stamp); opacity:0;
+  animation: flash 2.5s ease 2.05s forwards;
+}
+@keyframes flash{
+  0%{ opacity:0; } 12%{ opacity:.5; } 100%{ opacity:0; }
+}
+
+/* --- atla --- */
+.intro-skip{
+  position:absolute; z-index:4; right:16px; bottom:calc(16px + env(safe-area-inset-bottom));
+  font-family: var(--mono); font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color: var(--faint);
+  padding:8px 12px; border:1px solid var(--line); border-radius:2px;
+  background: rgba(10,13,19,.6);
+}
+.intro-skip:hover{ color: var(--text); border-color: var(--muted); }
+
+/* --- kapanış --- */
+#intro.is-closing{ animation: intro-out .5s ease forwards; }
+@keyframes intro-out{ to{ opacity:0; transform: scale(1.04); } }
+
+/* hareket azaltma: animasyon yok, tek kare başlık, hızlı kapanış */
+@media (prefers-reduced-motion: reduce){
+  .intro-strip{ display:none; }
+  .intro-flash{ display:none; }
+  .intro-sub{ opacity:1; }
+}
