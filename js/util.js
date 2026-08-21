@@ -18,6 +18,14 @@ window.Util = (function () {
     return `${d}.${m}.${y}`;
   }
 
+  const AY = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  /** '2024-07-27' -> '27 Tem 2024' */
+  function fmtShortTR(iso) {
+    if (!iso) return '';
+    const [y, m, d] = iso.split('-');
+    return `${+d} ${AY[+m - 1]} ${y}`;
+  }
+
   /** İki ISO tarih arasındaki tam gün farkı. */
   function daysBetween(fromISO, toISO) {
     const a = new Date(fromISO + 'T00:00:00');
@@ -54,5 +62,5 @@ window.Util = (function () {
     catch (e) { return false; }
   }
 
-  return { todayISO, fmtTR, daysBetween, kindLabel, escapeHTML, toast, copy };
+  return { todayISO, fmtTR, fmtShortTR, daysBetween, kindLabel, escapeHTML, toast, copy };
 })();

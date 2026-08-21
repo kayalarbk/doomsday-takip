@@ -61,6 +61,19 @@
   transition: width .5s cubic-bezier(.2,.8,.2,1);
 }
 
+/* duyurudan vizyona uzanan zaman şeridi — izleme şeridinden
+   ayrılsın diye daha sönük ve tek renk */
+.bar-time{ margin-top: 6px; height: 2px; }
+.bar-time span{ background: var(--faint); }
+
+.since{
+  display:flex; justify-content:space-between; gap:10px;
+  margin: 6px 0 0;
+  font-size: 9.5px; letter-spacing:.14em; text-transform:uppercase;
+  color: var(--faint);
+}
+.since b{ font-weight:400; color: var(--muted); flex:0 0 auto; }
+
 /* ---------------- filtreler ---------------- */
 .filters{
   position: sticky; top: 0; z-index: 20;

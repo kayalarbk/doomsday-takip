@@ -11,12 +11,13 @@ Vanilla HTML/CSS/JS — build adımı, bağımlılık, sunucu yok.
 - **84 yapım** (53 film, 26 dizi, 5 özel), çıkış tarihine göre sıralı yıl omurgası
 - Disney+'ın **resmî Doomsday listesi** ayrı rozetle işaretli
 - Karta tıkla → izledim damgası; tarihi elle düzelt ya da işareti kaldır
-- Filtreler: Hepsi / Resmî liste / MCU / X-Men / Filmler / Diziler / İzlenmemişler
-- Doomsday geri sayımı, ilerleme çubuğu, yıl bazlı sayaçlar
+- Filtreler: **Hepsi / Filmler / Diziler**
+- Doomsday geri sayımı: kalan gün + duyurudan vizyona uzanan zaman şeridi
+- İzleme ilerleme çubuğu ve yıl bazlı sayaçlar
 - Özgün açılış animasyonu (günde bir kez, atlanabilir)
 - Gerçek **poster görselleri** — anahtar gerekmez
 - Dışa/içe aktarma (JSON) ve sıfırlama
-- **PWA**: çevrimdışı çalışır, ana ekrana eklenebilir
+- **PWA**: kurulabilir, çevrimdışı çalışır, tam ekran açılır
 - Klavye erişimi ve `prefers-reduced-motion` desteği
 
 ## Çalıştırma
@@ -30,6 +31,21 @@ Service worker yalnızca `http(s)` üzerinden kaydolur, bu yüzden çevrimdış�
 python -m http.server 8000
 # http://localhost:8000
 ```
+
+## Geri sayım
+
+Büyük rakam Doomsday'e kalan günü gösterir. Altındaki ince şerit ise yolun
+ne kadarının geçtiğini: başlangıç **27 Temmuz 2024** — filmin SDCC'de
+`Avengers: Doomsday` adıyla ve Robert Downey Jr.'ın Doctor Doom olduğuyla
+duyurulduğu gün. Bitiş **18 Aralık 2026**, vizyon tarihi.
+
+İkisi de `js/render.js` başındaki `ANNOUNCED` ve `TARGET` sabitlerinde.
+
+## Uygulama olarak kurma
+
+Chrome/Edge'de adres çubuğundaki kur simgesi ya da Ayarlar'daki
+**Uygulamayı yükle** düğmesi. iPhone'da Safari → Paylaş → *Ana Ekrana Ekle*.
+Kurulduktan sonra tam ekran açılır ve internet olmadan da çalışır.
 
 ## Yayınlama
 

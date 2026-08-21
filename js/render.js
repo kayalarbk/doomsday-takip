@@ -8,35 +8,33 @@
 
    Filtre durumu tek bir nesnede tutulur (state). Yeni filtre
    eklemek için: FILTERS dizisine ekle + match() içine koşulu yaz.
+
+   Geri sayım iki tarih arasında ölçülür: ANNOUNCED (filmin
+   duyurulduğu gün) ve TARGET (vizyon). Üstteki büyük rakam
+   kalan günü, alttaki şerit yolun ne kadarının geçtiğini gösterir.
    ============================================================ */
 
 window.Render = (function () {
 
-  const TARGET = '2026-12-18';   // Avengers: Doomsday
+  const TARGET    = '2026-12-18';   // Avengers: Doomsday vizyon tarihi
+  const ANNOUNCED = '2024-07-27';   // SDCC 2024 — ad + RDJ'nin Doctor Doom olduğu duyuruldu
 
   let all = [];
   let listEl, emptyEl;
-  const state = { group: 'hepsi', hideSeen: false };
+  const state = { group: 'hepsi' };
 
   /* ---------- filtre tanımları ---------- */
   const FILTERS = [
-    { id: 'hepsi',  label: 'Hepsi' },
-    { id: 'resmi',  label: 'Resmî liste', cls: 'chip-ess' },
-    { id: 'mcu',    label: 'MCU' },
-    { id: 'xmen',   label: 'X-Men' },
-    { id: 'film',   label: 'Filmler' },
-    { id: 'dizi',   label: 'Diziler' }
+    { id: 'hepsi', label: 'Hepsi' },
+    { id: 'film',  label: 'Filmler' },
+    { id: 'dizi',  label: 'Diziler' }
   ];
 
   function match(it) {
-    if (state.hideSeen && Store.isWatched(it.id)) return false;
     switch (state.group) {
-      case 'resmi': return !!it.ess;
-      case 'mcu':   return it.u === 'MCU';
-      case 'xmen':  return it.u !== 'MCU';
-      case 'film':  return it.k === 'film';
-      case 'dizi':  return it.k === 'dizi' || it.k === 'ozel';
-      default:      return true;
+      case 'film': return it.k === 'film';
+      case 'dizi': return it.k === 'dizi' || it.k === 'ozel';   // özel yapımlar dizilerle
+      default:     return true;
     }
   }
 
@@ -166,8 +164,6 @@ window.Render = (function () {
     fillPanel(el, it);
     refreshStats();
     Util.toast(`Damgalandı · ${Util.fmtTR(dateStr)}`);
-
-    if (state.hideSeen) setTimeout(apply, 700);
   }
 
   /* ---------- liste ---------- */
@@ -211,11 +207,28 @@ window.Render = (function () {
     document.getElementById('count').innerHTML = `<b>${seen}</b> / ${total} izlendi`;
     document.getElementById('bar-fill').style.width = pct + '%';
 
-    const days = Util.daysBetween(Util.todayISO(), TARGET);
+    const today = Util.todayISO();
+    const days = Util.daysBetween(today, TARGET);
     const numEl = document.getElementById('days');
     numEl.innerHTML = days > 0
       ? `${days}<small>gün kaldı · Doomsday</small>`
       : (days === 0 ? `BUGÜN<small>Doomsday</small>` : `ÇIKTI<small>Doomsday</small>`);
+
+    countdown(today, days);
+  }
+
+  /* Duyurudan vizyona uzanan zaman şeridi. Toplam süre sabit;
+     bugünün o aralıkta nerede durduğunu gösterir. */
+  function countdown(today, daysLeft) {
+    const span = Util.daysBetween(ANNOUNCED, TARGET);          // toplam gün
+    const gone = Math.min(Math.max(Util.daysBetween(ANNOUNCED, today), 0), span);
+    const pct = span > 0 ? Math.round(gone / span * 100) : 100;
+
+    document.getElementById('time-fill').style.width = pct + '%';
+    document.getElementById('since-pct').textContent = '%' + pct;
+    document.getElementById('since-text').textContent = daysLeft >= 0
+      ? `${Util.fmtShortTR(ANNOUNCED)} duyuruldu · ${gone}. gün / ${span}`
+      : `${Util.fmtShortTR(ANNOUNCED)} duyuruldu · ${Util.fmtShortTR(TARGET)} çıktı`;
   }
 
   /* ---------- kurulum ---------- */
@@ -241,18 +254,8 @@ window.Render = (function () {
       bar.appendChild(b);
     });
 
-    const hide = document.createElement('button');
-    hide.type = 'button'; hide.className = 'chip'; hide.textContent = 'İzlenmemişler';
-    hide.setAttribute('aria-pressed', 'false');
-    hide.addEventListener('click', () => {
-      state.hideSeen = !state.hideSeen;
-      hide.setAttribute('aria-pressed', String(state.hideSeen));
-      apply();
-    });
-    bar.appendChild(hide);
-
     apply();
   }
 
-  return { init, apply, refreshStats, all: () => all, TARGET };
+  return { init, apply, refreshStats, all: () => all, TARGET, ANNOUNCED };
 })();

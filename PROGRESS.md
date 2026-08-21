@@ -3,7 +3,9 @@
 MCU + Fox X-Men izleme takibi. Vanilla JS/HTML/CSS, build adımı yok,
 GitHub Pages'e olduğu gibi atılır.
 
-Hedef tarih: **18 Aralık 2026** (`Render.TARGET` içinde sabit).
+Hedef tarih: **18 Aralık 2026** (`Render.TARGET`).
+Geri sayımın başlangıcı: **27 Temmuz 2024** (`Render.ANNOUNCED`) — filmin
+SDCC 2024'te adıyla duyurulduğu gün. İkisi de `js/render.js` başında.
 
 ---
 
@@ -18,8 +20,10 @@ mcu/
 ├── tools/
 │   └── fetch-posters.mjs      posters.js'i TMDB'den yeniden üretir (node)
 ├── icons/
-│   ├── icon-192.png           üretilmiş ikon (istersen değiştir)
-│   └── icon-512.png
+│   ├── icon-192.png           uygulama ikonu (purpose: any)
+│   ├── icon-512.png
+│   ├── icon-maskable-192.png  kenar boşluklu sürüm (purpose: maskable)
+│   └── icon-maskable-512.png
 ├── css/
 │   ├── base.css               DEĞİŞKENLER + reset + tipografi
 │   ├── intro.css              açılış animasyonu (süreler js/intro.js ile eşleşmeli)
@@ -163,15 +167,18 @@ Yoksa kullanıcıda eski sürüm takılı kalır.
 - [x] Yatay kartlar, sol tarafta kapak, yıl omurgası
 - [x] Karta tıkla → panel → bugünün tarihiyle "izledim" damgası
 - [x] Tarihi elle seçme, işareti kaldırma, tarihi düzeltme
-- [x] Filtreler: Hepsi / Resmî liste / MCU / X-Men / Filmler / Diziler / İzlenmemişler
-- [x] Doomsday geri sayımı + ilerleme çubuğu + yıl bazlı sayaç
+- [x] Filtreler: Hepsi / Filmler / Diziler (özel yapımlar dizilerle sayılır)
+- [x] Doomsday geri sayımı: kalan gün + duyurudan vizyona zaman şeridi
+- [x] İzleme ilerleme çubuğu + yıl bazlı sayaç
 - [x] Özgün açılış animasyonu, günde bir kez
 - [x] Depoya gömülü TMDB poster yolları (84/84) — anahtarsız gerçek kapaklar
 - [x] Eksikler için TMDB canlı arama + üretilen kapak yedeği
 - [x] `tools/fetch-posters.mjs` ile poster tablosunu yeniden üretme
 - [x] Dışa/içe aktarma (JSON), sıfırlama
-- [x] PWA: manifest, service worker, ikonlar, çevrimdışı çalışma
+- [x] PWA: manifest (id, display_override, maskable ikon), service worker,
+      iOS meta etiketleri, Ayarlar'da `beforeinstallprompt` ile yükle düğmesi
 - [x] Klavye erişimi, `prefers-reduced-motion`, mobil düzen
+- [x] Telefonda zoom kilidi (viewport `user-scalable=no` + `touch-action`)
 
 ## 8. Sıradaki fikirler
 

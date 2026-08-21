@@ -23,8 +23,8 @@
 
   /* --- ölçü --- */
   --spine:     34px;      /* sol zaman çizgisi genişliği */
-  --poster-w:  58px;
-  --poster-h:  87px;
+  --poster-w:  92px;      /* poster genişliği — yükseklik 1.5 katı olmalı */
+  --poster-h:  138px;
   --radius:    3px;
   --maxw:      760px;
 
@@ -39,6 +39,9 @@
 html, body { margin:0; padding:0; }
 
 body{
+  /* Telefonda çift dokunma zoom'u kapalı (viewport meta ile birlikte). */
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
   background: var(--void);
   color: var(--text);
   font-family: var(--body);

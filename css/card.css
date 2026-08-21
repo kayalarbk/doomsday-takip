@@ -19,7 +19,8 @@
 
 /* omurgaya bağlanan kısa çizgi */
 .card::before{
-  content:''; position:absolute; left:-23px; top: 43px;
+  content:''; position:absolute; left:-23px;
+  top: calc(10px + var(--poster-h) / 2);   /* poster ortası hizası */
   width: 21px; height:1px; background: var(--line);
 }
 
@@ -53,15 +54,15 @@
 .poster-fallback{
   position:absolute; inset:0;
   display:flex; flex-direction:column; justify-content:flex-end;
-  padding: 6px 5px;
+  padding: 8px 7px;
   font-family: var(--display); font-weight:800;
-  font-size: 15px; line-height:.9; color: rgba(255,255,255,.9);
+  font-size: 23px; line-height:.9; color: rgba(255,255,255,.9);
   text-shadow: 0 1px 2px rgba(0,0,0,.5);
 }
 .poster-fallback b{
   display:block; font-family: var(--mono); font-weight:400;
-  font-size: 8px; letter-spacing:.1em; color: rgba(255,255,255,.55);
-  margin-top: 3px;
+  font-size: 10px; letter-spacing:.1em; color: rgba(255,255,255,.55);
+  margin-top: 4px;
 }
 
 /* --- metin --- */
@@ -133,6 +134,9 @@
 
 /* ekranı dar olanlarda damga metnin üstüne binmesin */
 @media (max-width: 430px){
+  /* dar ekranda poster biraz küçülür, metne yer kalsın */
+  :root{ --poster-w: 76px; --poster-h: 114px; }
+  .poster-fallback{ font-size: 19px; }
   .stamp{ font-size:9px; padding:3px 5px; right:8px; }
   .card.is-seen .meta{ padding-right: 66px; }
 }

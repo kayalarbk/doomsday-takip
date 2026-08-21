@@ -8,6 +8,29 @@
 (function () {
   const ITEMS = [].concat(window.DATA_MCU || [], window.DATA_XMEN || []);
 
+  /* Tarayıcı "yüklenebilir" dediği anı yakala. Bu olay DOMContentLoaded'dan
+     önce de gelebildiği için dinleyici en başta kurulur, olay saklanır. */
+  let installEvent = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    installEvent = e;
+    showInstall();
+  });
+
+  function standalone() {
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+      || navigator.standalone === true;
+  }
+
+  function showInstall(text) {
+    const row = document.getElementById('install-row');
+    const wrap = document.getElementById('install-wrap');
+    if (!row || standalone()) return;              // zaten uygulama olarak açık
+    if (text) row.textContent = text;
+    row.hidden = false;
+    if (!text && wrap) wrap.hidden = false;        // iOS'ta buton yok, yalnız yönerge
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
 
     /* --- liste --- */
@@ -65,6 +88,31 @@
     document.getElementById('replay').addEventListener('click', function () {
       Intro.play(ITEMS, { force: true });
     });
+
+    /* --- uygulama olarak yükle --- */
+    const installBtn = document.getElementById('install');
+    installBtn.addEventListener('click', async function () {
+      if (!installEvent) return;
+      installEvent.prompt();
+      const res = await installEvent.userChoice;
+      installEvent = null;
+      document.getElementById('install-wrap').hidden = true;
+      if (res.outcome !== 'accepted') {
+        document.getElementById('install-row').textContent =
+          'Yükleme iptal edildi. Tarayıcı menüsünden "Uygulama olarak yükle" ile tekrar deneyebilirsin.';
+      }
+    });
+    window.addEventListener('appinstalled', function () {
+      document.getElementById('install-row').hidden = true;
+      document.getElementById('install-wrap').hidden = true;
+      Util.toast('Uygulama yüklendi');
+    });
+    // iOS'ta beforeinstallprompt yok — elle yönerge göster
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !installEvent) {
+      showInstall("iPhone/iPad: Safari'de Paylaş düğmesi → Ana Ekrana Ekle. Uygulama tam ekran açılır ve çevrimdışı çalışır.");
+    } else if (installEvent) {
+      showInstall();
+    }
 
     /* --- kayıt uyarısı --- */
     if (!Store.live) {

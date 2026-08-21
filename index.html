@@ -2,12 +2,18 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Doomsday'e Hazırlık — MCU + X-Men izleme takibi</title>
 <meta name="description" content="Avengers: Doomsday öncesi tüm MCU ve X-Men yapımlarını çıkış yılına göre takip et. İzlediklerini tarihiyle işaretle.">
 <meta name="theme-color" content="#12161f">
 <link rel="manifest" href="./manifest.webmanifest">
+
+<!-- iOS ana ekrana eklendiğinde tam ekran açılsın -->
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Doomsday">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,6 +39,13 @@
       </div>
     </div>
     <div class="bar"><span id="bar-fill"></span></div>
+
+    <!-- duyurudan çıkışa uzanan zaman şeridi -->
+    <div class="bar bar-time"><span id="time-fill"></span></div>
+    <p class="since mono">
+      <span id="since-text">—</span>
+      <b id="since-pct"></b>
+    </p>
   </header>
 
   <nav class="filters" id="filters" aria-label="Liste filtreleri"></nav>
@@ -44,10 +57,11 @@
     <h2>Ayarlar</h2>
 
     <p>
-      Kapak görselleri depoda tutulmuyor; posterler telifli.
-      Ücretsiz bir <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">TMDB API anahtarı</a>
-      girersen kapaklar oradan çekilip cihazına önbelleklenir. Anahtar girmezsen
-      site üretilen kapaklarla tam olarak çalışmaya devam eder.
+      Kapaklar TMDB'den geliyor ve anahtar gerektirmiyor — listedeki 84 yapımın
+      poster yolu siteyle birlikte geliyor. Yalnızca karşılığı bulunamayan bir
+      kayıt olursa üretilen kapak gösterilir; istersen ücretsiz bir
+      <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">TMDB API anahtarı</a>
+      girip o eksikler için canlı arama yaptırabilirsin.
     </p>
     <div class="tool-row">
       <input class="key-input" id="tmdb-key" type="password" autocomplete="off"
@@ -61,6 +75,13 @@
       <button class="tool-btn" id="import" type="button">İçe aktar</button>
       <button class="tool-btn" id="replay" type="button">Jeneriği oynat</button>
       <button class="tool-btn danger" id="reset" type="button">Kayıtları sil</button>
+    </div>
+
+    <p id="install-row" hidden>
+      Siteyi uygulama gibi kullanabilirsin — ana ekrana eklenir, çevrimdışı açılır.
+    </p>
+    <div class="tool-row" id="install-wrap" hidden>
+      <button class="tool-btn" id="install" type="button">Uygulamayı yükle</button>
     </div>
 
     <p>
