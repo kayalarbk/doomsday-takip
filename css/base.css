@@ -5,16 +5,15 @@
 
 :root{
   /* --- zemin --- */
-  --void:      #12161f;   /* sayfa arka planı */
-  --surface:   #1a2029;   /* kart yüzeyi */
-  --surface-2: #222a36;   /* hover / girinti */
-  --line:      #2c3644;   /* hairline */
+  /* Zemin de vurgu da js/theme.js tarafından kaydırma konumuna göre
+     yeniden yazılır (kızıl → yeşil). Buradakiler listenin başındaki
+     hâl, yani JS çalışmasa site kızıl zeminle açılır. */
+  --void:      #1a0f12;   /* sayfa arka planı */
+  --surface:   #26181c;   /* kart yüzeyi */
+  --surface-2: #332125;   /* hover / girinti */
+  --line:      #452b30;   /* hairline */
 
   /* --- vurgu --- */
-  /* Bu beş renk (--void, --surface, --surface-2, --line, --stamp)
-     js/theme.js tarafından çalışma anında yeniden yazılır: Doomsday'e
-     yaklaştıkça kızıldan Doom yeşiline kayar. Buradaki değerler
-     "uzak" hâl, yani JS çalışmasa da site Marvel kırmızısıyla açılır. */
   --stamp:     #ec1d24;   /* Marvel kırmızısı — damga, vurgu */
   --stamp-dim: rgba(236,29,36,.16);
   --gold:      #e3b54a;   /* yıl işaretleri, ilerleme */

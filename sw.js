@@ -5,7 +5,7 @@
    hem de SHELL listesini güncelle. Aksi halde kullanıcıda eski
    sürüm takılı kalır.
    ============================================================ */
-const CACHE = 'doomsday-v4';
+const CACHE = 'doomsday-v5';
 const SHELL = [
   './',
   './index.html',

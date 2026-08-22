@@ -172,7 +172,7 @@ Yoksa kullanıcıda eski sürüm takılı kalır.
 - [x] Tarihi elle seçme, işareti kaldırma, tarihi düzeltme
 - [x] Filtreler: Hepsi / Filmler / Diziler (özel yapımlar dizilerle sayılır)
 - [x] Doomsday sayacı: ay · gün · saat, saniyelik tick, takvim tabanlı ay hesabı
-- [x] Kızıldan yeşile dönen tema (`js/theme.js`) — son 180 günde, sona yığılı
+- [x] Kaydırdıkça kızıldan yeşile dönen tema (`js/theme.js`) — zemin + vurgu
 - [x] Duyurudan vizyona zaman şeridi
 - [x] İzleme ilerleme çubuğu + yıl bazlı sayaç
 - [x] Özgün açılış animasyonu, günde bir kez
@@ -188,22 +188,34 @@ Yoksa kullanıcıda eski sürüm takılı kalır.
 ## 7b. Tema geçişi
 
 `js/theme.js` beş CSS değişkenini (`--void`, `--surface`, `--surface-2`,
-`--line`, `--stamp`) çalışma anında `:root` üzerine yazar. `css/base.css`
-bunları kırmızı hâliyle tanımlar, yani JS çalışmasa da site düzgün açılır.
+`--line`, `--stamp`) kaydırma konumuna göre `:root` üzerine yazar.
+`css/base.css` bunları kızıl hâliyle tanımlar, yani JS çalışmasa da site
+düzgün açılır.
 
-İki karar açıklama ister:
+Sürücü **kaydırma**, zaman değil: liste kronolojik olduğu için aşağı inmek
+Doomsday'e yaklaşmak demek. Oran, görüntü alanının ortasının `#list` içinde
+nerede olduğuyla ölçülür — başlık ve Ayarlar bölümü hesabı kaydırmasın diye.
 
-- **Geçiş doğrusal değil** (`EASE = 3`). Doğrusal olsaydı 180 günün
-  yarısında renk çoktan sarıya kaymış olurdu; oysa istenen "yaklaştıkça
-  dönmeye başlasın". Üs sayesinde 90 gün kala %13, 30 gün kala %58,
-  7 gün kala %89 yeşil olunur.
+Dört karar açıklama ister:
+
+- **Geçiş doğrusal değil** (`EASE = 1.8`). Doğrusalken sayfanın daha dörtte
+  birinde renk turuncuya kayıyordu, Marvel kırmızısı hiç görünmüyordu.
+  Eğriyle üst yarı kırmızı kalıyor, yeşil son üçte bire denk geliyor.
 - **Vurgu rengi HSL'de karışır**, zeminler RGB'de. Kırmızıdan yeşile RGB'de
   gidilirse ara değerler çamur kahveye düşüyordu (`rgb(171 77 56)` gibi);
-  HSL'de ton kırmızı → turuncu → yeşil yolunu izliyor ve her aşamada canlı
-  kalıyor. Zeminler neredeyse siyah olduğu için orada RGB sorun çıkarmıyor.
+  HSL'de ton kırmızı → turuncu → yeşil yolunu izliyor, her aşamada canlı.
+  Zeminler neredeyse siyah olduğu için orada RGB sorun çıkarmıyor.
+- **Zemin uçları birbirinden açıkça ayrı.** İlk denemede uçlar fazla yakındı
+  (`#12161f → #0c1811`) ve kaydırırken zeminin döndüğü fark edilmiyordu.
+  Şimdi üst uç sıcak kızıl-siyah (`#1a0f12`), alt uç yosun yeşili-siyah
+  (`#081c13`). `--text` her iki uçta da 14:1 üstü kontrast veriyor.
+- **Her karede stil yazılmaz.** Oran `STEPS` (200) kademeye yuvarlanır ve
+  yalnızca kademe değişince `:root` güncellenir; 84 kartlık sayfada kaydırma
+  sırasında stil hesabı boşa gitmesin diye. Dinleyici de `requestAnimationFrame`
+  ile kısılmış.
 
-Sayaç saniyede bir çalışır ama `Theme.apply` oran değişmediyse hiçbir stil
-yazmaz — gereksiz stil hesabı olmasın diye.
+Liste filtreyle yeniden çizilince boyu değişir, o yüzden `Render.apply()`
+sonunda `Theme.sync()` çağrılır.
 
 ## 8. Sıradaki fikirler
 

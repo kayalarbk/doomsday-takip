@@ -13,7 +13,7 @@ Vanilla HTML/CSS/JS — build adımı, bağımlılık, sunucu yok.
 - Karta tıkla → izledim damgası; tarihi elle düzelt ya da işareti kaldır
 - Filtreler: **Hepsi / Filmler / Diziler**
 - Doomsday geri sayım sayacı: **ay · gün · saat**, canlı
-- Yaklaştıkça Marvel kırmızısından Doom yeşiline dönen tema
+- Listede aşağı indikçe Marvel kırmızısından Doom yeşiline dönen tema
 - Duyurudan vizyona uzanan zaman şeridi
 - İzleme ilerleme çubuğu ve yıl bazlı sayaçlar
 - Özgün açılış animasyonu (günde bir kez, atlanabilir)
@@ -48,9 +48,15 @@ sabitlerinde.
 
 ## Tema
 
-Site Marvel kırmızısıyla açılır. Vizyona **180 gün** kala renkler Doctor Doom
-yeşiline kaymaya başlar; geçiş sona doğru hızlanır, çıkış günü ekran tamamen
-yeşildir. Ayar `js/theme.js` içindeki `SHIFT_DAYS` ve `EASE` sabitlerinde.
+Liste kronolojik: en üstte 2000 (X-Men), en altta 2026 (Doomsday). Sayfada
+aşağı indikçe Doomsday'e yaklaştığın için palet **Marvel kırmızısından
+Doctor Doom yeşiline** döner — hem vurgu rengi hem sayfa zemini. Listenin
+başında kızıl, sonunda yeşil.
+
+İlerleme, görüntü alanının ortasının `#list` içinde nerede olduğuyla ölçülür;
+başlık ve alttaki Ayarlar bölümü hesabı kaydırmaz. Geçiş `EASE` ile eğrilmiş:
+üst yarı kırmızı kalır, yeşil son üçte bire denk gelir. Düz geçiş istersen
+`js/theme.js` içinde `EASE = 1` yap.
 
 ## Uygulama olarak kurma
 

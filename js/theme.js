@@ -1,43 +1,54 @@
 /* ============================================================
-   js/theme.js — Doomsday'e yaklaştıkça kızıldan yeşile dönen tema
+   js/theme.js — listede aşağı indikçe kızıldan yeşile dönen tema
    ------------------------------------------------------------
-   Taban palet Marvel kırmızısı. Vizyona SHIFT_DAYS gün kala ekran
-   Doctor Doom yeşiline kaymaya başlar, çıkış günü tamamen yeşil olur.
+   Liste kronolojik: en üstte 2000 (X-Men), en altta 2026
+   (Doomsday). Sayfada aşağı indikçe Doomsday'e yaklaştığın için
+   palet Marvel kırmızısından Doctor Doom yeşiline kayar.
+   Listenin başında tam kırmızı, sonunda tam yeşil.
+
+   İlerleme, görüntü alanının ortasının #list içinde nerede
+   olduğuyla ölçülür — sayfa başlığı ve alttaki Ayarlar bölümü
+   hesabı kaydırmasın diye.
 
    İki ayrıntı önemli:
 
-   1) Geçiş DOĞRUSAL DEĞİL (EASE üssü). Doğrusal olsaydı daha aylar
-      varken renk çoktan kaymış olurdu; oysa istenen "yaklaştıkça
-      dönmeye başlasın". Üs sayesinde son aya kadar kırmızı kalır,
-      son haftalarda hızla yeşile geçer.
+   1) Vurgu rengi (--stamp) RGB'de değil HSL'de karışır.
+      Kırmızıdan yeşile RGB'de gidilirse ara değerler çamur
+      kahveye düşer; HSL'de ton kırmızı → turuncu → yeşil yolunu
+      izler ve her aşamada canlı kalır. Zemin renkleri zaten
+      neredeyse siyah olduğu için onlarda RGB karışımı sorun
+      çıkarmaz.
 
-   2) Vurgu rengi (--stamp) RGB'de değil HSL'de karışır. Kırmızıdan
-      yeşile RGB'de gidilirse ara değerler çamur kahveye düşer;
-      HSL'de renk tonu kırmızı → turuncu → yeşil yolunu izler ve
-      her aşamada canlı kalır. Zemin renkleri zaten neredeyse siyah
-      olduğu için onlarda RGB karışımı sorun çıkarmaz.
+   2) Kaydırırken her karede stil yazılmaz. İlerleme STEPS
+      kademeye yuvarlanır ve yalnızca kademe değişince :root
+      güncellenir — 84 kartlık sayfada stil hesabı boşa gitmesin.
 
-   Renkler css/base.css'te kırmızı hâliyle tanımlıdır — JS çalışmazsa
-   site Marvel kırmızısıyla açılır, hiçbir şey bozulmaz.
+   Renkler css/base.css'te kırmızı hâliyle tanımlıdır; JS
+   çalışmazsa site Marvel kırmızısıyla açılır, hiçbir şey bozulmaz.
    ============================================================ */
 
 window.Theme = (function () {
 
-  const SHIFT_DAYS = 180;   // yeşile dönüş bu kadar gün kala başlar
-  const EASE = 3;           // büyüdükçe geçiş sona yığılır
+  const STEPS = 200;   // ilerleme kaç kademeye yuvarlansın
+  const EASE  = 1.8;   // 1 = düz geçiş; büyüdükçe kırmızı üstte daha uzun kalır
 
-  /* Zemin renkleri — RGB'de karışır */
+  /* Zemin renkleri — RGB'de karışır.
+     İki uç birbirinden AÇIKÇA ayrılmalı: ilk denemede uçlar fazla
+     yakındı (#12161f → #0c1811) ve kaydırırken zeminin döndüğü
+     fark edilmiyordu. Şimdi üst uç sıcak kızıl-siyah, alt uç
+     yosun yeşili-siyah. Metin rengi (--text #e7eaf0) her ikisinde
+     de 12:1 üstü kontrast veriyor. */
   const BG_RED = {
-    '--void':      [0x12, 0x16, 0x1f],
-    '--surface':   [0x1a, 0x20, 0x29],
-    '--surface-2': [0x22, 0x2a, 0x36],
-    '--line':      [0x2c, 0x36, 0x44]
+    '--void':      [0x1a, 0x0f, 0x12],   // sıcak kızıl-siyah
+    '--surface':   [0x26, 0x18, 0x1c],
+    '--surface-2': [0x33, 0x21, 0x25],
+    '--line':      [0x45, 0x2b, 0x30]
   };
   const BG_GREEN = {
-    '--void':      [0x0c, 0x18, 0x11],
-    '--surface':   [0x13, 0x22, 0x19],
-    '--surface-2': [0x1a, 0x2e, 0x22],
-    '--line':      [0x25, 0x3f, 0x2e]
+    '--void':      [0x08, 0x1c, 0x13],   // yosun yeşili-siyah
+    '--surface':   [0x10, 0x2b, 0x1d],
+    '--surface-2': [0x18, 0x3a, 0x27],
+    '--line':      [0x24, 0x4e, 0x34]
   };
 
   /* Vurgu — HSL'de karışır. h derece, s/l yüzde. */
@@ -48,14 +59,7 @@ window.Theme = (function () {
   const lerp = (a, b, t) => a + (b - a) * t;
   const mix = (a, b, t) => Math.round(lerp(a, b, t));
 
-  /** Kalan güne göre yeşillik oranı: 0 = tam kırmızı, 1 = tam yeşil. */
-  function ratio(daysLeft) {
-    if (!isFinite(daysLeft)) return 0;
-    const ham = clamp01((SHIFT_DAYS - daysLeft) / SHIFT_DAYS);
-    return Math.pow(ham, EASE);
-  }
-
-  /** HSL → 'rgb(r g b)'. h 0-360, s/l 0-100. */
+  /** HSL → [r,g,b]. h 0-360, s/l 0-100. */
   function hsl(h, s, l) {
     h = ((h % 360) + 360) % 360;
     s /= 100; l /= 100;
@@ -68,15 +72,20 @@ window.Theme = (function () {
     return [r, g, b].map(v => Math.round((v + m) * 255));
   }
 
-  let sonOran = null;
+  let sonKademe = null;
 
-  /** Temayı kalan güne göre uygular, kullanılan oranı döndürür.
-      Oran değişmediyse hiçbir stil yazılmaz — sayaç saniyede bir
-      çağırdığı için gereksiz stil hesabı olmasın. */
-  function apply(daysLeft) {
-    const t = ratio(daysLeft);
-    if (t === sonOran) return t;
-    sonOran = t;
+  /** Temayı 0 (kırmızı) – 1 (yeşil) arası bir orana getirir.
+
+      Oran EASE ile eğrilir: düz geçişte sayfanın daha dörtte birinde
+      renk turuncuya kayıyor, Marvel kırmızısı hiç görünmüyordu.
+      Eğriyle üst yarı kırmızı kalıyor, yeşil son üçte bire — yani
+      Doomsday'e yakın yapımlara — denk geliyor. Düz geçiş istersen
+      EASE = 1 yap. */
+  function apply(oran) {
+    const kademe = Math.round(Math.pow(clamp01(oran), EASE) * STEPS);
+    if (kademe === sonKademe) return;          // kademe değişmediyse dokunma
+    sonKademe = kademe;
+    const t = kademe / STEPS;
     const root = document.documentElement.style;
 
     /* --- zeminler --- */
@@ -105,8 +114,31 @@ window.Theme = (function () {
     }
 
     document.documentElement.dataset.doom = Math.round(t * 100);
-    return t;
   }
 
-  return { apply, ratio, hsl, SHIFT_DAYS };
+  /** Görüntü alanının ortası listenin neresinde? 0 = başı, 1 = sonu. */
+  function progress() {
+    const list = document.getElementById('list');
+    if (!list) return 0;
+    const h = list.offsetHeight;
+    if (h <= 0) return 0;
+    const ust = list.getBoundingClientRect().top + window.scrollY;
+    return clamp01((window.scrollY + window.innerHeight / 2 - ust) / h);
+  }
+
+  /** Kaydırmayı dinlemeye başlar. Kare başına en fazla bir hesap. */
+  let bekleyen = false;
+  function sync() {
+    if (bekleyen) return;
+    bekleyen = true;
+    requestAnimationFrame(() => { bekleyen = false; apply(progress()); });
+  }
+
+  function watch() {
+    addEventListener('scroll', sync, { passive: true });
+    addEventListener('resize', sync);
+    sync();
+  }
+
+  return { apply, progress, sync, watch, hsl };
 })();

@@ -12,8 +12,12 @@
    Geri sayım iki tarih arasında ölçülür: ANNOUNCED (filmin
    duyurulduğu gün) ve TARGET (vizyon). Üstteki sayaç kalan
    ay/gün/saati saniyede bir tazeler, alttaki şerit yolun ne
-   kadarının geçtiğini gösterir. Aynı tick temayı da günceller
-   (bkz. js/theme.js — yaklaştıkça kızıldan yeşile).
+   kadarının geçtiğini gösterir.
+
+   Tema buradan sürülmez; js/theme.js sayfanın kaydırma
+   konumunu dinler (liste kronolojik olduğu için aşağı indikçe
+   renk kızıldan yeşile döner). Liste yeniden çizildiğinde
+   yüksekliği değiştiği için apply() sonunda Theme.sync() çağrılır.
    ============================================================ */
 
 window.Render = (function () {
@@ -176,6 +180,7 @@ window.Render = (function () {
     if (!rows.length) {
       emptyEl.hidden = false;
       refreshStats();
+      if (window.Theme) Theme.sync();
       return;
     }
     emptyEl.hidden = true;
@@ -198,6 +203,7 @@ window.Render = (function () {
     });
 
     refreshStats();
+    if (window.Theme) Theme.sync();   // liste boyu değişti, oran yeniden ölçülsün
   }
 
   /* ---------- istatistik ---------- */
@@ -259,8 +265,6 @@ window.Render = (function () {
     document.getElementById('since-text').textContent = daysLeft >= 0
       ? `${Util.fmtShortTR(ANNOUNCED)} duyuruldu · ${gone}. gün / ${span}`
       : `${Util.fmtShortTR(ANNOUNCED)} duyuruldu · ${Util.fmtShortTR(TARGET)} çıktı`;
-
-    if (window.Theme) Theme.apply(daysLeft);
   }
 
   /* ---------- kurulum ---------- */
@@ -287,7 +291,8 @@ window.Render = (function () {
     });
 
     apply();
-    setInterval(tick, 1000);   // sayaç + tema canlı kalsın
+    if (window.Theme) Theme.watch();   // kaydırdıkça kızıldan yeşile
+    setInterval(tick, 1000);           // sayaç canlı kalsın
   }
 
   return { init, apply, refreshStats, tick, all: () => all, TARGET, ANNOUNCED };
