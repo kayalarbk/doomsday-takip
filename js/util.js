@@ -18,6 +18,32 @@ window.Util = (function () {
     return `${d}.${m}.${y}`;
   }
 
+  /** Bir tarihe n ay ekler. Ayın son günlerinde taşmayı engeller:
+      31 Ocak + 1 ay = 28 Şubat, 3 Mart değil. */
+  function addMonths(date, n) {
+    const r = new Date(date.getTime());
+    const day = r.getDate();
+    r.setDate(1);
+    r.setMonth(r.getMonth() + n);
+    const son = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+    r.setDate(Math.min(day, son));
+    return r;
+  }
+
+  /** İki an arasındaki farkı ay / gün / saat / dakika / saniye olarak verir.
+      Ay sayısı takvimden hesaplanır (30 gün varsayımı yok), kalan süre
+      son tam aydan sonra ölçülür. Hedef geçmişse null döner. */
+  function countdownParts(from, to) {
+    if (to <= from) return null;
+    let ay = 0;
+    while (addMonths(from, ay + 1) <= to) ay++;
+    let kalan = to - addMonths(from, ay);
+    const gun = Math.floor(kalan / 86400000);  kalan -= gun * 86400000;
+    const saat = Math.floor(kalan / 3600000);  kalan -= saat * 3600000;
+    const dk = Math.floor(kalan / 60000);      kalan -= dk * 60000;
+    return { ay, gun, saat, dk, sn: Math.floor(kalan / 1000) };
+  }
+
   const AY = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
   /** '2024-07-27' -> '27 Tem 2024' */
   function fmtShortTR(iso) {
@@ -62,5 +88,6 @@ window.Util = (function () {
     catch (e) { return false; }
   }
 
-  return { todayISO, fmtTR, fmtShortTR, daysBetween, kindLabel, escapeHTML, toast, copy };
+  return { todayISO, fmtTR, fmtShortTR, daysBetween, addMonths, countdownParts,
+           kindLabel, escapeHTML, toast, copy };
 })();

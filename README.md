@@ -12,7 +12,9 @@ Vanilla HTML/CSS/JS — build adımı, bağımlılık, sunucu yok.
 - Disney+'ın **resmî Doomsday listesi** ayrı rozetle işaretli
 - Karta tıkla → izledim damgası; tarihi elle düzelt ya da işareti kaldır
 - Filtreler: **Hepsi / Filmler / Diziler**
-- Doomsday geri sayımı: kalan gün + duyurudan vizyona uzanan zaman şeridi
+- Doomsday geri sayım sayacı: **ay · gün · saat**, canlı
+- Yaklaştıkça Marvel kırmızısından Doom yeşiline dönen tema
+- Duyurudan vizyona uzanan zaman şeridi
 - İzleme ilerleme çubuğu ve yıl bazlı sayaçlar
 - Özgün açılış animasyonu (günde bir kez, atlanabilir)
 - Gerçek **poster görselleri** — anahtar gerekmez
@@ -34,12 +36,21 @@ python -m http.server 8000
 
 ## Geri sayım
 
-Büyük rakam Doomsday'e kalan günü gösterir. Altındaki ince şerit ise yolun
-ne kadarının geçtiğini: başlangıç **27 Temmuz 2024** — filmin SDCC'de
-`Avengers: Doomsday` adıyla ve Robert Downey Jr.'ın Doctor Doom olduğuyla
-duyurulduğu gün. Bitiş **18 Aralık 2026**, vizyon tarihi.
+Sayaç Doomsday'e kalan süreyi **ay · gün · saat** olarak gösterir ve saniyede
+bir tazelenir (ekrana yalnızca değişen değer yazılır). Ay sayısı takvimden
+hesaplanır, "30 gün = 1 ay" varsayımı yok.
 
-İkisi de `js/render.js` başındaki `ANNOUNCED` ve `TARGET` sabitlerinde.
+Altındaki ince şerit yolun ne kadarının geçtiğini gösterir: başlangıç
+**27 Temmuz 2024** — filmin SDCC'de `Avengers: Doomsday` adıyla ve Robert
+Downey Jr.'ın Doctor Doom olduğuyla duyurulduğu gün. Bitiş **18 Aralık 2026**,
+vizyon tarihi. İkisi de `js/render.js` başındaki `ANNOUNCED` ve `TARGET`
+sabitlerinde.
+
+## Tema
+
+Site Marvel kırmızısıyla açılır. Vizyona **180 gün** kala renkler Doctor Doom
+yeşiline kaymaya başlar; geçiş sona doğru hızlanır, çıkış günü ekran tamamen
+yeşildir. Ayar `js/theme.js` içindeki `SHIFT_DAYS` ve `EASE` sabitlerinde.
 
 ## Uygulama olarak kurma
 

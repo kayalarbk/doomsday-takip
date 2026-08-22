@@ -20,6 +20,7 @@ mcu/
 ├── tools/
 │   └── fetch-posters.mjs      posters.js'i TMDB'den yeniden üretir (node)
 ├── icons/
+│   ├── apple-touch-icon.png   iOS ana ekran ikonu — 180x180 ve OPAK olmalı
 │   ├── icon-192.png           uygulama ikonu (purpose: any)
 │   ├── icon-512.png
 │   ├── icon-maskable-192.png  kenar boşluklu sürüm (purpose: maskable)
@@ -34,6 +35,7 @@ mcu/
     ├── storage.js             localStorage sarmalayıcı           (bağımlılığı yok)
     ├── posters.js             TMDB + üretilen kapak              (Store'a bağlı)
     ├── intro.js               açılış animasyonu                  (Store, Posters, Util)
+    ├── theme.js                kızıl→yeşil tema geçişi              (bağımlılığı yok)
     ├── data/
     │   ├── mcu.js             window.DATA_MCU  — 69 kayıt
     │   ├── xmen.js            window.DATA_XMEN — 15 kayıt
@@ -42,7 +44,8 @@ mcu/
     └── app.js                 başlangıç, ayarlar, dışa/içe aktarma, sw kaydı
 ```
 
-**Yükleme sırası zorunlu:** `util → storage → posters → intro → data → render → app`.
+**Yükleme sırası zorunlu:**
+`util → theme → storage → posters → intro → data → render → app`.
 Modül sistemi yok, hepsi `window` üzerinde global. Sıra bozulursa sessizce çöker.
 
 ---
@@ -168,7 +171,9 @@ Yoksa kullanıcıda eski sürüm takılı kalır.
 - [x] Karta tıkla → panel → bugünün tarihiyle "izledim" damgası
 - [x] Tarihi elle seçme, işareti kaldırma, tarihi düzeltme
 - [x] Filtreler: Hepsi / Filmler / Diziler (özel yapımlar dizilerle sayılır)
-- [x] Doomsday geri sayımı: kalan gün + duyurudan vizyona zaman şeridi
+- [x] Doomsday sayacı: ay · gün · saat, saniyelik tick, takvim tabanlı ay hesabı
+- [x] Kızıldan yeşile dönen tema (`js/theme.js`) — son 180 günde, sona yığılı
+- [x] Duyurudan vizyona zaman şeridi
 - [x] İzleme ilerleme çubuğu + yıl bazlı sayaç
 - [x] Özgün açılış animasyonu, günde bir kez
 - [x] Depoya gömülü TMDB poster yolları (84/84) — anahtarsız gerçek kapaklar
@@ -179,6 +184,26 @@ Yoksa kullanıcıda eski sürüm takılı kalır.
       iOS meta etiketleri, Ayarlar'da `beforeinstallprompt` ile yükle düğmesi
 - [x] Klavye erişimi, `prefers-reduced-motion`, mobil düzen
 - [x] Telefonda zoom kilidi (viewport `user-scalable=no` + `touch-action`)
+
+## 7b. Tema geçişi
+
+`js/theme.js` beş CSS değişkenini (`--void`, `--surface`, `--surface-2`,
+`--line`, `--stamp`) çalışma anında `:root` üzerine yazar. `css/base.css`
+bunları kırmızı hâliyle tanımlar, yani JS çalışmasa da site düzgün açılır.
+
+İki karar açıklama ister:
+
+- **Geçiş doğrusal değil** (`EASE = 3`). Doğrusal olsaydı 180 günün
+  yarısında renk çoktan sarıya kaymış olurdu; oysa istenen "yaklaştıkça
+  dönmeye başlasın". Üs sayesinde 90 gün kala %13, 30 gün kala %58,
+  7 gün kala %89 yeşil olunur.
+- **Vurgu rengi HSL'de karışır**, zeminler RGB'de. Kırmızıdan yeşile RGB'de
+  gidilirse ara değerler çamur kahveye düşüyordu (`rgb(171 77 56)` gibi);
+  HSL'de ton kırmızı → turuncu → yeşil yolunu izliyor ve her aşamada canlı
+  kalıyor. Zeminler neredeyse siyah olduğu için orada RGB sorun çıkarmıyor.
+
+Sayaç saniyede bir çalışır ama `Theme.apply` oran değişmediyse hiçbir stil
+yazmaz — gereksiz stil hesabı olmasın diye.
 
 ## 8. Sıradaki fikirler
 

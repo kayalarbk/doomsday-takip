@@ -5,11 +5,12 @@
    hem de SHELL listesini güncelle. Aksi halde kullanıcıda eski
    sürüm takılı kalır.
    ============================================================ */
-const CACHE = 'doomsday-v3';
+const CACHE = 'doomsday-v4';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './icons/apple-touch-icon.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-192.png',
@@ -19,6 +20,7 @@ const SHELL = [
   './css/layout.css',
   './css/card.css',
   './js/util.js',
+  './js/theme.js',
   './js/storage.js',
   './js/posters.js',
   './js/intro.js',

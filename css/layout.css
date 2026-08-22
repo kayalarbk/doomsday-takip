@@ -45,6 +45,25 @@
   font-family: var(--mono); font-weight:400; font-size:10px;
   letter-spacing:.18em; text-transform:uppercase; color: var(--muted);
 }
+
+/* ay · gün · saat bölmeleri */
+.cd{ display:flex; align-items:baseline; gap:14px; }
+.cd-seg{ display:flex; align-items:baseline; gap:4px; }
+.cd-seg b{ font-weight:800; font-variant-numeric: tabular-nums; }
+.cd-seg i{
+  font-style:normal;
+  font-family: var(--mono); font-weight:400; font-size:11px;
+  letter-spacing:.14em; text-transform:uppercase; color: var(--muted);
+}
+/* çıkışa saatler kala saniyeler de dönsün diye ayrı bir bölme yok;
+   sayaç her saniye yeniden hesaplanır, yalnızca değişen yazılır */
+.cd-done{ font-size: 34px; }
+
+@media (max-width: 430px){
+  .status-num{ font-size: 34px; }
+  .cd{ gap: 10px; }
+  .cd-seg i{ font-size: 10px; }
+}
 .status-right{ text-align:right; }
 .status-count{
   font-family: var(--mono); font-size: 13px; color: var(--text);

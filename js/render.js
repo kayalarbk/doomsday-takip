@@ -10,13 +10,15 @@
    eklemek için: FILTERS dizisine ekle + match() içine koşulu yaz.
 
    Geri sayım iki tarih arasında ölçülür: ANNOUNCED (filmin
-   duyurulduğu gün) ve TARGET (vizyon). Üstteki büyük rakam
-   kalan günü, alttaki şerit yolun ne kadarının geçtiğini gösterir.
+   duyurulduğu gün) ve TARGET (vizyon). Üstteki sayaç kalan
+   ay/gün/saati saniyede bir tazeler, alttaki şerit yolun ne
+   kadarının geçtiğini gösterir. Aynı tick temayı da günceller
+   (bkz. js/theme.js — yaklaştıkça kızıldan yeşile).
    ============================================================ */
 
 window.Render = (function () {
 
-  const TARGET    = '2026-12-18';   // Avengers: Doomsday vizyon tarihi
+  const TARGET    = '2026-12-18';   // Avengers: Doomsday vizyon tarihi (yerel gece yarısı)
   const ANNOUNCED = '2024-07-27';   // SDCC 2024 — ad + RDJ'nin Doctor Doom olduğu duyuruldu
 
   let all = [];
@@ -207,19 +209,47 @@ window.Render = (function () {
     document.getElementById('count').innerHTML = `<b>${seen}</b> / ${total} izlendi`;
     document.getElementById('bar-fill').style.width = pct + '%';
 
-    const today = Util.todayISO();
-    const days = Util.daysBetween(today, TARGET);
-    const numEl = document.getElementById('days');
-    numEl.innerHTML = days > 0
-      ? `${days}<small>gün kaldı · Doomsday</small>`
-      : (days === 0 ? `BUGÜN<small>Doomsday</small>` : `ÇIKTI<small>Doomsday</small>`);
+    tick();
+  }
 
-    countdown(today, days);
+  /* ---------- geri sayım sayacı ---------- */
+  // Saniyede bir çalışır ama DOM'a yalnızca değişen şey yazılır:
+  // sayaç saatte bir, şerit ve tema günde bir tazelenir.
+  let lastCd = '', lastDays = null;
+
+  /** Sayaç + zaman şeridi + tema. Saniyede bir çağrılır. */
+  function tick() {
+    const now = new Date();
+    const target = new Date(TARGET + 'T00:00:00');
+    const p = Util.countdownParts(now, target);
+
+    const html = p
+      ? `<span class="cd">` +
+        seg(p.ay, 'ay') + seg(p.gun, 'gün') + seg(p.saat, 'saat') +
+        `</span><small>Doomsday'e kaldı</small>`
+      : `<span class="cd-done">ÇIKTI</span><small>Doomsday</small>`;
+
+    if (html !== lastCd) {
+      document.getElementById('days').innerHTML = html;
+      lastCd = html;
+    }
+
+    const today = Util.todayISO();
+    const daysLeft = Util.daysBetween(today, TARGET);
+    if (daysLeft !== lastDays) {
+      lastDays = daysLeft;
+      strip(today, daysLeft);
+    }
+  }
+
+  function seg(n, label) {
+    return `<span class="cd-seg"><b>${n}</b><i>${label}</i></span>`;
   }
 
   /* Duyurudan vizyona uzanan zaman şeridi. Toplam süre sabit;
      bugünün o aralıkta nerede durduğunu gösterir. */
-  function countdown(today, daysLeft) {
+  function strip(today, daysLeft) {
+
     const span = Util.daysBetween(ANNOUNCED, TARGET);          // toplam gün
     const gone = Math.min(Math.max(Util.daysBetween(ANNOUNCED, today), 0), span);
     const pct = span > 0 ? Math.round(gone / span * 100) : 100;
@@ -229,6 +259,8 @@ window.Render = (function () {
     document.getElementById('since-text').textContent = daysLeft >= 0
       ? `${Util.fmtShortTR(ANNOUNCED)} duyuruldu · ${gone}. gün / ${span}`
       : `${Util.fmtShortTR(ANNOUNCED)} duyuruldu · ${Util.fmtShortTR(TARGET)} çıktı`;
+
+    if (window.Theme) Theme.apply(daysLeft);
   }
 
   /* ---------- kurulum ---------- */
@@ -255,7 +287,8 @@ window.Render = (function () {
     });
 
     apply();
+    setInterval(tick, 1000);   // sayaç + tema canlı kalsın
   }
 
-  return { init, apply, refreshStats, all: () => all, TARGET, ANNOUNCED };
+  return { init, apply, refreshStats, tick, all: () => all, TARGET, ANNOUNCED };
 })();

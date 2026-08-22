@@ -8,8 +8,13 @@
 <meta name="theme-color" content="#12161f">
 <link rel="manifest" href="./manifest.webmanifest">
 
-<!-- iOS ana ekrana eklendiğinde tam ekran açılsın -->
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+
+<!-- iOS ana ekrana eklendiğinde tam ekran açılsın.
+     apple-touch-icon iOS'un beklediği 180x180 ve opak olmalı:
+     saydam PNG ana ekranda siyah kareye dönüyor. -->
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,7 +38,7 @@
     <p class="masthead-sub">MCU + X-Men · çıkış yılına göre</p>
 
     <div class="status">
-      <div class="status-num mono" id="days" aria-live="polite">—</div>
+      <div class="status-num mono" id="days" aria-live="polite" aria-label="Doomsday'e kalan süre">—</div>
       <div class="status-right">
         <div class="status-count" id="count">— / —</div>
       </div>
@@ -94,6 +99,7 @@
 
 <!-- Yükleme sırası önemli: util -> storage -> posters -> intro -> veri -> render -> app -->
 <script src="./js/util.js"></script>
+<script src="./js/theme.js"></script>
 <script src="./js/storage.js"></script>
 <script src="./js/posters.js"></script>
 <script src="./js/intro.js"></script>

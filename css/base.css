@@ -11,8 +11,12 @@
   --line:      #2c3644;   /* hairline */
 
   /* --- vurgu --- */
-  --stamp:     #c2452d;   /* damga mürekkebi — izlendi işareti */
-  --stamp-dim: rgba(194,69,45,.16);
+  /* Bu beş renk (--void, --surface, --surface-2, --line, --stamp)
+     js/theme.js tarafından çalışma anında yeniden yazılır: Doomsday'e
+     yaklaştıkça kızıldan Doom yeşiline kayar. Buradaki değerler
+     "uzak" hâl, yani JS çalışmasa da site Marvel kırmızısıyla açılır. */
+  --stamp:     #ec1d24;   /* Marvel kırmızısı — damga, vurgu */
+  --stamp-dim: rgba(236,29,36,.16);
   --gold:      #e3b54a;   /* yıl işaretleri, ilerleme */
   --gold-dim:  rgba(227,181,74,.14);
 
